@@ -1,0 +1,16 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+~$*
+
+# Roblox Studio Auto-saves and logs
+*.rbxlx.bak
+*.rbxl.bak
+
+# Obsidian local cache (if opened)
+.obsidian/
