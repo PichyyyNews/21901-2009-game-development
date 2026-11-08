@@ -149,26 +149,37 @@ workspace
 
 Properties ของ **Part** ที่จะใช้ในบทนี้:
 
-| Property | ความหมาย | ชนิดข้อมูล | ตัวอย่างค่า |
-| :--- | :--- | :--- | :--- |
-| `Color` | สีของบล็อก | Color3 | `Color3.fromRGB(255, 0, 0)` |
-| `Size` | ขนาด กว้าง × สูง × ยาว | Vector3 | `Vector3.new(4, 1, 4)` |
-| `Position` | ตำแหน่ง X, Y, Z ในโลก | Vector3 | `Vector3.new(0, 5, 0)` |
-| `Anchored` | ล็อกไม่ให้ตก (จริง/เท็จ) | boolean | `true` หรือ `false` |
-| `Transparency` | ความโปร่งใส 0=ทึบ 1=ล่องหน | number | `0.5` |
-| `Material` | วัสดุผิว เช่น หิน โลหะ | Enum | `Enum.Material.Neon` |
-| `Name` | ชื่อของ Object | string | `"PaintPart"` |
-| `Parent` | Object แม่ที่ซ้อนอยู่ข้างใน | Instance | `workspace` |
+| Property       | ความหมาย                    | ชนิดข้อมูล | ตัวอย่างค่า                 |
+| :------------- | :-------------------------- | :--------- | :-------------------------- |
+| `Color`        | สีของบล็อก                  | Color3     | `Color3.fromRGB(255, 0, 0)` |
+| `Size`         | ขนาด กว้าง × สูง × ยาว      | Vector3    | `Vector3.new(4, 1, 4)`      |
+| `Position`     | ตำแหน่ง X, Y, Z ในโลก       | Vector3    | `Vector3.new(0, 5, 0)`      |
+| `Anchored`     | ล็อกไม่ให้ตก (จริง/เท็จ)    | boolean    | `true` หรือ `false`         |
+| `Transparency` | ความโปร่งใส 0=ทึบ 1=ล่องหน  | number     | `0.5`                       |
+| `Material`     | วัสดุผิว เช่น หิน โลหะ      | Enum       | `Enum.Material.Neon`        |
+| `Name`         | ชื่อของ Object              | string     | `"PaintPart"`               |
+| `Parent`       | Object แม่ที่ซ้อนอยู่ข้างใน | Instance   | `workspace`                 |
 
 > [!tip] ดู Property ทั้งหมดได้ที่ไหน
 > เลือก Part ใน Studio แล้วดูแถบ **Properties** ด้านขวา — ทุก Property ที่เห็นในแถบนั้น เราเปลี่ยนได้ด้วยโค้ด Lua ทั้งหมด
 
 ---
 
-### 2.5.4 การ "อ่าน" vs "เขียน" Property
+### 2.5.4 การ "อ่านค่า" vs "เขียนค่า" Property
+
+> [!warning] ข้อผิดพลาดที่พบบ่อย — ต้องกำหนด `part` ก่อนเสมอ
+> โค้ดทุกบรรทัดในส่วนนี้ **ใช้งานไม่ได้ถ้าเขียนอยู่เดี่ยว ๆ**
+> ต้องมีบรรทัด `local part = workspace.PaintPart` อยู่ก่อนเสมอ
+> ถ้าไม่มี — `part` จะเป็น `nil` และจะ error ว่า `attempt to index nil with 'Color'`
+
+**โค้ดที่ถูกต้อง — ต้องครบทุกบรรทัดเสมอ:**
 
 **อ่านค่า** (ดูว่า Property มีค่าอะไรอยู่):
 ```lua
+-- บรรทัดนี้ต้องมีก่อนเสมอ!
+local part = workspace.PaintPart
+
+-- จากนั้นจึงอ่าน Property ได้
 local currentColor = part.Color    -- เก็บค่าสีปัจจุบันไว้ในตัวแปร
 print(part.Size)                   -- พิมพ์ขนาดออก Output
 print(part.Name)                   -- พิมพ์ชื่อออก Output
@@ -176,6 +187,10 @@ print(part.Name)                   -- พิมพ์ชื่อออก Outpu
 
 **เขียนค่า** (เปลี่ยน Property ให้เป็นค่าใหม่):
 ```lua
+-- บรรทัดนี้ต้องมีก่อนเสมอ!
+local part = workspace.PaintPart
+
+-- จากนั้นจึงเปลี่ยน Property ได้
 part.Color = Color3.fromRGB(255, 0, 0)   -- เปลี่ยนสีเป็นแดง
 part.Size = Vector3.new(10, 1, 10)       -- เปลี่ยนขนาดเป็น 10×1×10
 part.Anchored = true                     -- ล็อกให้ติดอยู่กับที่
@@ -185,6 +200,12 @@ part.Anchored = true                     -- ล็อกให้ติดอย
 > ในบทที่ 4 เรียนว่า `=` คือ **การกำหนดค่า** ไม่ใช่การเปรียบเทียบ
 > `part.Color = ...` แปลว่า "ให้ Color ของ part มีค่าเป็น ..."
 > ไม่ใช่การถามว่า "Color เท่ากับ ... ไหม" (อันนั้นใช้ `==`)
+
+> [!caution] ทำไม `attempt to index nil with 'Color'` ถึงเกิด
+> error นี้แปลว่า Lua พยายามเข้าถึง `.Color` ของ `part` แต่ `part` เป็น **nil** (ว่างเปล่า ไม่มีค่า)
+> สาเหตุที่ `part` เป็น nil มี 2 กรณี:
+> 1. **ลืมเขียน** `local part = workspace.PaintPart` → แก้โดยเพิ่มบรรทัดนี้ก่อน
+> 2. **ชื่อ Part ผิด** เช่น เขียน `workspace.paintpart` แต่ใน Studio ชื่อ `PaintPart` → ตรวจชื่อให้ตรง (ตัวใหญ่-เล็กสำคัญ)
 
 ---
 
